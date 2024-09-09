@@ -1,0 +1,61 @@
+name: Release CI
+
+on:
+  push:
+    branches: ['release/*']
+
+jobs:
+  # This workflow contains a single job called "build"
+  release-integration:
+
+    name: Release Integration Build and Publish
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # In order for the gitversion to properly work you need to clone the repository with the entire history:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.0.0
+        with:
+          versionSpec: '6.x'
+
+      - name: Determine Version
+        uses: gittools/actions/gitversion/execute@v3.0.0
+        with:
+          useConfigFile: true
+          configFilePath: VersionConfig.yml
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          distribution: "temurin"
+          java-version: 21
+          cache: "maven"
+
+      - name: Display GitVersion variables (without prefix)
+        run: |
+          echo "FullSemVer (env.fullSemVer)            : ${{ env.fullSemVer }}"
+
+      - name: Display GitVersion variables (with prefix)
+        run: |
+          echo "FullSemVer (env.GitVersion_FullSemVer) : ${{ env.GitVersion_FullSemVer }}"
+
+      - name: Run the Maven set version
+        run: mvn versions:set -DnewVersion=${{ env.fullSemVer }} -q
+
+      - name: Run the Maven verify phase
+        run: mvn --batch-mode --update-snapshots verify
+
+      - run: mkdir staging && cp target/*.jar staging
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Package
+          path: staging
+
