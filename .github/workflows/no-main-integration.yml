@@ -51,9 +51,6 @@ jobs:
       - name: Run the Maven set version
         run: mvn versions:set -DnewVersion=${{ env.fullSemVer }} -q
 
-      - name: Cat pom.xml
-        run: cat pom.xml
-
       - name: Run the Maven verify phase
         run: mvn --batch-mode --update-snapshots verify
 
