@@ -16,6 +16,8 @@ jobs:
 
     steps:
 
+      # Link: https://github.com/GitTools/actions/blob/main/docs/examples/github/gitversion/index.md
+
       # In order for the gitversion to properly work you need to clone the repository with the entire history:
       - name: Checkout
         uses: actions/checkout@v4
@@ -54,6 +56,7 @@ jobs:
       - name: Run the Maven verify phase
         run: mvn --batch-mode --update-snapshots verify
 
+      # Link: https://docs.github.com/es/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-maven
       - run: mkdir staging && cp target/*.jar staging
 
       - uses: actions/upload-artifact@v4
