@@ -22,4 +22,11 @@ public class GreetingResource {
         return "Hi, " + name;
     }
 
+    @GET
+    @Path("/{name}/greeting/{greeting}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String helloWithNameAndGreeting(@PathParam("name") String name, @PathParam("greeting") String greeting) {
+        return greeting + ", " + name;
+    }
+
 }
